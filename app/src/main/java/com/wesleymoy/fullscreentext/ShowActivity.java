@@ -119,9 +119,7 @@ public class ShowActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ((TextView) mContentView).setText(s);
-                ((TextView) mContentView).setTextSize(800);
-                ((TextView) mContentView).postInvalidate();
+                ((AsBigAsPossibleTextView) mContentView).setExampleString(s.toString());
             }
 
             @Override

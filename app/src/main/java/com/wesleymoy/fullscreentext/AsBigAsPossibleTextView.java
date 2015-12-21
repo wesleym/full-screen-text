@@ -30,6 +30,7 @@ public class AsBigAsPossibleTextView extends View {
     private float mTextWidth;
     private float mTextHeight;
     public static final Pattern LAST_WHITESPACE = Pattern.compile("\\s\\S*$");
+    private final List<String> lines = new ArrayList<>();
 
     public AsBigAsPossibleTextView(Context context) {
         super(context);
@@ -104,7 +105,7 @@ public class AsBigAsPossibleTextView extends View {
         int contentHeight = getHeight() - paddingTop - paddingBottom;
 
         mExampleString = mExampleString.trim();
-        List<String> lines = new ArrayList<>();
+        mTextPaint.setTextSize(800);
         boolean tooBig = true;
         while (tooBig) {
             int start = 0;
