@@ -29,8 +29,6 @@ public class AsBigAsPossibleTextView extends View {
     private TextPaint mTextPaint;
     private float mTextWidth;
     private float mTextHeight;
-    public static final Pattern LAST_WHITESPACE = Pattern.compile("\\s\\S*$");
-    private final List<String> lines = new ArrayList<>();
 
     public AsBigAsPossibleTextView(Context context) {
         super(context);
@@ -104,39 +102,7 @@ public class AsBigAsPossibleTextView extends View {
         int contentWidth = getWidth() - paddingLeft - paddingRight;
         int contentHeight = getHeight() - paddingTop - paddingBottom;
 
-        mExampleString = mExampleString.trim();
-        mTextPaint.setTextSize(800);
-        boolean tooBig = true;
-        while (tooBig) {
-            int start = 0;
-            lines.clear();
-            tooBig = false;
-            mTextPaint.setTextSize(mTextPaint.getTextSize() - 10);
-            Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
-            Log.d(TAG, "text size: " + mTextPaint.getTextSize());
-            while (start < mExampleString.length() - 1 && !tooBig) {
-                int i = mTextPaint.breakText(mExampleString, start, mExampleString.length(), true, contentWidth, null);
-                Log.d(TAG, "i: " + i);
-                if (i == mExampleString.length() - start) {
-                    lines.add(mExampleString.substring(start, start + i));
-                    start += i;
-                    continue;
-                }
-                Matcher matcher = LAST_WHITESPACE.matcher(mExampleString).region(start, start + i);
-                if (!matcher.find()) {
-                    tooBig = true;
-                } else {
-                    int whitespace = matcher.start();
-                    lines.add(mExampleString.substring(start, whitespace).trim());
-                    start = whitespace + 1;
-                }
-            }
-
-            float size = (-fontMetrics.ascent + fontMetrics.descent) * lines.size() + fontMetrics.leading * (lines.size() - 1);
-            if (size > contentHeight) {
-                tooBig = true;
-            }
-        }
+        List<String> lines = new TextSizer(mTextPaint).breakLines(mExampleString, contentWidth, contentHeight);
 
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
         float size = (-fontMetrics.ascent + fontMetrics.descent) * lines.size() + fontMetrics.leading * (lines.size() - 1);
@@ -144,7 +110,7 @@ public class AsBigAsPossibleTextView extends View {
         for (int i = 0; i < lines.size(); i++) {
             canvas.drawText(lines.get(i),
                     paddingLeft + contentWidth / 2,
-                    top + (-fontMetrics.ascent + fontMetrics.descent + fontMetrics.leading) * i -fontMetrics.ascent,
+                    top + (-fontMetrics.ascent + fontMetrics.descent + fontMetrics.leading) * i - fontMetrics.ascent,
                     mTextPaint);
         }
 
